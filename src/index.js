@@ -19,12 +19,12 @@ io.on("connection", (socket) => {
   console.log("New connnectio");
   socket.emit("countUpdated", count);
 
-  socket.emit("messageReceived", generateMessage("Welcome!"));
+  // socket.emit("messageReceived", generateMessage("Welcome!"));
 
-  socket.broadcast.emit(
-    "newUser",
-    generateMessage("new user connected joined")
-  );
+  // socket.broadcast.emit(
+  //   "newUser",
+  //   generateMessage("new user connected joined")
+  // );
 
   socket.on("increment", () => {
     count++;
@@ -33,13 +33,22 @@ io.on("connection", (socket) => {
     io.emit("countUpdated", count);
   });
 
+  socket.on("join", ({ username, room }) => {
+    socket.join(room);
+    socket.emit("messageReceived", generateMessage("Welcome!"));
+
+    socket.broadcast
+      .to(room)
+      .emit("messageReceived", generateMessage(`${username} has joined!`));
+  });
+
   socket.on("message", (message, callback) => {
     const filter = new Filter();
 
     if (filter.isProfane(message)) {
       return callback("Profanity is not allowed");
     }
-    io.emit("messageReceived", generateMessage(message));
+    io.to("Smooth").emit("messageReceived", generateMessage(message));
     callback();
   });
 
@@ -59,7 +68,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    io.emit("messageReceived", "A user has left");
+    io.emit("messageReceived", generateMessage("A user has left"));
   });
 });
 server.listen(port, () => console.log("listening on port " + port));

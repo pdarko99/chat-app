@@ -11,7 +11,7 @@ socket.on("countUpdated", (count) => {
 });
 
 socket.on("messageReceived", (message) => {
-  console.log(message);
+  console.log(message, "from message received");
   const html = Mustache.render(messageTemplate, {
     message: message.text,
     createdAt: moment(message.createdAt).format("h:mm a"),
@@ -30,13 +30,14 @@ socket.on("locationMessage", (location) => {
   messages.insertAdjacentHTML("beforeend", html);
 });
 
-socket.on("newUser", (user) => {
-  console.log(user);
+const { username, room } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true,
 });
 
-document.querySelector("#increment").addEventListener("click", () => {
-  console.log("clicked");
-  socket.emit("increment");
+console.log(username, room);
+
+socket.on("newUser", (user) => {
+  console.log(user);
 });
 
 let btn = document.querySelector("#sub").addEventListener("click", () => {
@@ -60,3 +61,5 @@ document.querySelector("#location").addEventListener("click", () => {
     });
   });
 });
+
+socket.emit("join", { username, room });
