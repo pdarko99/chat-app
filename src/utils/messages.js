@@ -5,14 +5,15 @@ const generateMessage = (text) => {
   };
 };
 
-const generateLocation = (loc) => {
+const generateLocation = (loc, username) => {
   return {
-    text:loc,
+    username,
+    text: loc,
     createdAt: new Date().getTime(),
   };
 };
 
 module.exports = {
   generateMessage,
-  generateLocation
+  generateLocation,
 };

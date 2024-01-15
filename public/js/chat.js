@@ -23,6 +23,7 @@ socket.on("messageReceived", (message) => {
 socket.on("locationMessage", (location) => {
   console.log(location);
   const html = Mustache.render(locationTemplate, {
+    username: location.username,
     location: location.text,
     createdAt: moment(location.createdAt).format("h:mm a"),
   });
@@ -62,4 +63,8 @@ document.querySelector("#location").addEventListener("click", () => {
   });
 });
 
-socket.emit("join", { username, room });
+socket.emit("join", { username, room }, (error) => {
+  if (error) {
+    alert(error);
+  }
+});
